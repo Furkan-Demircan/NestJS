@@ -14,7 +14,6 @@ import { Todo } from './todo/entity/todo.entity';
       password: 'nest',
       database: 'nest',
       entities: [Todo],
-      synchronize: true,
     }),
   ],
 })
