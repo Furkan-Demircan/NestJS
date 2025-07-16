@@ -1,51 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { Todo, newTodo } from './interfaces/todo.interface';
+import { newTodo } from './interfaces/todo.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Todo } from './entity/todo.entity';
 
 @Injectable()
 export class TodoService {
-  private todos: Todo[] = [];
+  constructor(
+    @InjectRepository(Todo)
+    private repo: Repository<Todo>,
+  ) {}
 
-  create(createTodoDto: CreateTodoDto) {
-    const newTodo: newTodo = {
-      id: this.todos.length + 1,
-      completed: false,
-      title: createTodoDto.title,
-    };
-    this.todos.push(newTodo);
-    return 'Todo created successfully';
+  create(dto: CreateTodoDto) {
+    const todo = this.repo.create(dto);
+    return this.repo.save(todo);
   }
 
   findAll() {
-    return this.todos;
+    return this.repo.find();
   }
 
   findOne(id: number) {
-    const todo = this.todos.find((todo) => todo.id === id);
-    if (!todo) {
-      return `Todo with id ${id} not found`;
-    }
-    return todo;
+    return this.repo.findOneBy({ id });
   }
 
-  update(id: number, updateTodoDto: UpdateTodoDto) {
-    const todo = this.todos.find((todo) => todo.id == id);
-    if (!todo) {
-      return `Todo with id ${id} not found`;
-    }
-    todo.title = updateTodoDto.title || todo.title;
-    todo.completed = updateTodoDto.completed
-      ? updateTodoDto.completed
-      : todo.completed;
+  async update(id: number, dto: UpdateTodoDto) {
+    await this.repo.update(id, dto);
+    return this.repo.findOneBy({ id });
   }
 
-  remove(id: number) {
-    const todo = this.todos.find((todo) => todo.id === id);
-    if (!todo) {
-      return `Todo with id ${id} not found`;
-    }
-    this.todos = this.todos.filter((todo) => todo.id !== id);
-    return `Todo with id ${id} removed successfully`;
+  async remove(id: number) {
+    await this.repo.delete(id);
+    return `This action removes a #${id} todo`;
   }
 }
