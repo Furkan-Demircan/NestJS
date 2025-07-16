@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Todo } from './interfaces/todo.interface';
-import { todo } from 'node:test';
 
 interface newTodo {
   id: number;
