@@ -39,4 +39,9 @@ export class TodoController {
   remove(@Param('id') id: string) {
     return this.todoService.remove(+id);
   }
+
+  @Put(':id/toggle')
+  toggle(@Param('id') id: string) {
+    return this.todoService.toggle(+id);
+  }
 }

@@ -3,7 +3,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Todo } from './entity/todo.entity';
+import { Todo } from '../typeorm/Todo';
 
 @Injectable()
 export class TodoService {
@@ -33,5 +33,13 @@ export class TodoService {
   async remove(id: number) {
     await this.repo.delete(id);
     return `This action removes a #${id} todo`;
+  }
+
+  async toggle(id: number) {
+    const todo = await this.repo.findOneBy({ id });
+    if (!todo) {
+      throw new Error(`Todo with id ${id} not found`);
+    }
+    await this.repo.update(id, { completed: !todo.completed });
   }
 }

@@ -1,20 +1,25 @@
 import { Module } from '@nestjs/common';
 import { TodoModule } from './todo/todo.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Todo } from './todo/entity/todo.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import databaseConfig from './_config/database.config';
 
 @Module({
   imports: [
-    TodoModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'nest',
-      password: 'nest',
-      database: 'nest',
-      entities: [Todo],
+    ConfigModule.forRoot({
+      cache: true,
+      isGlobal: true,
+      load: [databaseConfig],
     }),
+
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        ...configService.get('database'),
+      }),
+    }),
+    TodoModule,
   ],
 })
 export class AppModule {}

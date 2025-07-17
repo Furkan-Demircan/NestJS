@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { Todo } from './src/todo/entity/todo.entity';
+import entities from './src/typeorm/';
 
 export default new DataSource({
   type: 'postgres',
@@ -8,7 +8,7 @@ export default new DataSource({
   username: 'nest',
   password: 'nest',
   database: 'nest',
-  entities: [Todo],
+  entities: entities,
   migrations: ['src/database/migrations/*.ts'],
   synchronize: false,
 });
